@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My projects</string>
+    <string name="close_app">Do you want to close app?</string>
+</resources>

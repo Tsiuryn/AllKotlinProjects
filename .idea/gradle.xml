@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="PLATFORM" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/animation" />
+            <option value="$PROJECT_DIR$/bottomnavigation" />
+            <option value="$PROJECT_DIR$/databinding" />
+            <option value="$PROJECT_DIR$/exampletest" />
+            <option value="$PROJECT_DIR$/firestoretest" />
+            <option value="$PROJECT_DIR$/koinexample" />
+            <option value="$PROJECT_DIR$/lyfecycle" />
+            <option value="$PROJECT_DIR$/mygson" />
+            <option value="$PROJECT_DIR$/navigationdrawer" />
+            <option value="$PROJECT_DIR$/permission" />
+            <option value="$PROJECT_DIR$/recyclerfilter" />
+            <option value="$PROJECT_DIR$/tabpage" />
+            <option value="$PROJECT_DIR$/timer" />
+            <option value="$PROJECT_DIR$/toolbar" />
+            <option value="$PROJECT_DIR$/ts_notes" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+        <option name="useQualifiedModuleNames" value="true" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
