@@ -1,6 +1,7 @@
-package alex.ts.mygson
+package alex.ts.mygson.fragments
 
-import alex.ts.mygson.ListContactsFragment.Companion.PARCELABLE_LIST_CONTACT
+import alex.ts.mygson.R
+import alex.ts.mygson.fragments.ListContactsFragment.Companion.PARCELABLE_LIST_CONTACT
 import alex.ts.mygson.model.MyContactModel
 import alex.ts.mygson.model.MyListContacts
 import alex.ts.mygson.permission.GetPermissions
@@ -34,6 +35,11 @@ class ConvertToFileFragment : Fragment() {
         val list = getArgumentsFromListFragment()
         val text = createJson(list)
         val exportButton = view.findViewById<Button>(R.id.btnConvertToFile)
+        val getFileButton = view.findViewById<Button>(R.id.btnGetFile)
+        getFileButton.setOnClickListener {
+            activity!!.supportFragmentManager.beginTransaction()
+                .replace(R.id.myContainer, GuideFragment()).addToBackStack(null).commit()
+        }
         permissions.checkPermission()
         exportButton.setOnClickListener { writeFile(text) }
     }
@@ -48,19 +54,24 @@ class ConvertToFileFragment : Fragment() {
     }
 
     private fun writeFile(text: String) {
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+        if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
             return
         }
-        var sdPath = Environment.getStorageDirectory()
-        sdPath = File(sdPath.absolutePath + "/" + "MyApp")
+        var sdPath = Environment.getExternalStorageDirectory()
+//        var sdPath = context!!.filesDir
+        sdPath = File(sdPath!!.absolutePath + "/" + "MyApp")
         sdPath.mkdir()
-        val sdFile = File(sdPath, "MyContact.ts")
+        val sdFile = File(sdPath, "MyContact.tsa")
         try {
             val bw = BufferedWriter(FileWriter(sdFile))
             bw.write(text)
             bw.close()
             Log.d("TAG", "writeFile: ${sdFile.absolutePath}")
-            Toast.makeText(requireContext(), "File added to ${sdFile.absolutePath}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "File added to ${sdFile.absolutePath}",
+                Toast.LENGTH_LONG
+            ).show()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {

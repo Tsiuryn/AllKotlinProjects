@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ListAdapter(private val list: List<MyContactModel>) :
+class ListAdapter(private var list: ArrayList<MyContactModel>) :
     RecyclerView.Adapter<ListAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         return MyHolder(
@@ -23,6 +23,12 @@ class ListAdapter(private val list: List<MyContactModel>) :
         holder.myId.text = contact.id.toString()
         holder.name.text = contact.name
         holder.date.text = contact.date
+    }
+
+    fun updateAdapter(newList: ArrayList<MyContactModel>){
+        list.clear()
+        list = newList
+        notifyDataSetChanged()
     }
 
     class MyHolder(view: View) : RecyclerView.ViewHolder(view) {

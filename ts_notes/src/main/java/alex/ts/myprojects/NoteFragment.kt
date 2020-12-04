@@ -27,7 +27,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_note.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.lang.ClassCastException
 import java.sql.Time
@@ -100,24 +102,20 @@ class NoteFragment : BaseFragment() {
 
     private fun addNoteToDB(note: Note) {
         launch {
-            context?.let {
-                NotesDatabase(it).getNotesDAO().addNote(note)
+                NotesDatabase.getNotesDataBase(requireContext())!!.getNotesDAO().addNote(note)
                 updateAdapter()
                 Toast.makeText(requireContext(), "Added", Toast.LENGTH_SHORT).show()
-            }
+
         }
     }
 
     private fun updateAdapter() {
         launch {
-            context?.let {
-                list = NotesDatabase(it).getNotesDAO().getAllNotes() as ArrayList<Note>
+                list = NotesDatabase.getNotesDataBase(requireContext())!!.getNotesDAO().getAllNotes() as ArrayList<Note>
                 Log.d("TAG", "В базе ${list.size} записей")
                 val sortedList =
                     getFoldersByPath(list, Preferences.getCurrentPath(requireContext()))
                 adapter.updateAdapter(sortedList)
-
-            }
         }
     }
 
@@ -276,7 +274,7 @@ class NoteFragment : BaseFragment() {
     private fun deleteItemFromDatabase(note: Note) {
         launch {
             context?.let {
-                NotesDatabase(it).getNotesDAO().deleteNote(note)
+                NotesDatabase.getNotesDataBase(requireContext())!!.getNotesDAO().deleteNote(note)
                 updateAdapter()
             }
         }

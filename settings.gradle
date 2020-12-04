@@ -1,3 +1,4 @@
+include ':recyclerpayload'
 include ':mygson'
 include ':exampletest'
 include ':timer'

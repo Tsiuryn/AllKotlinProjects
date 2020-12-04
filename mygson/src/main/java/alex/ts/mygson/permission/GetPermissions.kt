@@ -30,11 +30,12 @@ class GetPermissions(private val context: Context, private val myActivity: AppCo
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            requestStoragePermission()
+             requestStoragePermission()
         }
     }
 
     private fun requestStoragePermission() {
+        var getPerm = false
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 myActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -52,7 +53,7 @@ class GetPermissions(private val context: Context, private val myActivity: AppCo
                     )
                 }
                 .setNegativeButton("cancel"
-                ) { dialog, which -> dialog!!.dismiss() }.create().show();
+                ) { dialog, which -> dialog!!.dismiss() }.create().show()
         }else {
             ActivityCompat.requestPermissions(myActivity,
                 arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE);
