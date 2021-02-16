@@ -10,15 +10,19 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/addbuttonprogr" />
             <option value="$PROJECT_DIR$/animation" />
             <option value="$PROJECT_DIR$/bottomnavigation" />
             <option value="$PROJECT_DIR$/databinding" />
             <option value="$PROJECT_DIR$/exampletest" />
             <option value="$PROJECT_DIR$/firestoretest" />
+            <option value="$PROJECT_DIR$/jobScheduler" />
+            <option value="$PROJECT_DIR$/jsoup" />
             <option value="$PROJECT_DIR$/koinexample" />
             <option value="$PROJECT_DIR$/lyfecycle" />
             <option value="$PROJECT_DIR$/mygson" />
             <option value="$PROJECT_DIR$/navigationdrawer" />
+            <option value="$PROJECT_DIR$/parserXML" />
             <option value="$PROJECT_DIR$/permission" />
             <option value="$PROJECT_DIR$/recyclerfilter" />
             <option value="$PROJECT_DIR$/recyclerpayload" />
@@ -26,6 +30,7 @@
             <option value="$PROJECT_DIR$/timer" />
             <option value="$PROJECT_DIR$/toolbar" />
             <option value="$PROJECT_DIR$/ts_notes" />
+            <option value="$PROJECT_DIR$/workWithEditText" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
