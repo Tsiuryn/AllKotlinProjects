@@ -1,3 +1,4 @@
+include ':ForTest'
 include ':parserXML'
 include ':workWithEditText'
 include ':addbuttonprogr'
