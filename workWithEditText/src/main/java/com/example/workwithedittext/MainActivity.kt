@@ -2,6 +2,7 @@ package com.example.workwithedittext
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.core.widget.doOnTextChanged
 import com.example.workwithedittext.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,11 +30,13 @@ class MainActivity : AppCompatActivity() {
             ignore = true
 //            binding.myEditText.checkTextBySymbol(isBackSpace)
 //            binding.myEditText.checkTextByLength(3, isBackSpace)
-            binding.myEditText.replaceTexBySpecified(" Хорошего настроения Вам в Новом году!", isBackSpace)
+//            binding.myEditText.replaceTexBySpecified(" Хорошего настроения Вам в Новом году!", isBackSpace)
+
             ignore = false
         }
 
-        binding.imageButton.contentDescription = "sldkjflsjdfsdkf"
+
+//        binding.imageButton.contentDescription = "sldkjflsjdfsdkf"
 
     }
 }

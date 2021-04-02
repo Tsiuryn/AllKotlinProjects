@@ -59,7 +59,6 @@ fun EditText.replaceTexBySpecified (newText: String, isBackSpace: Boolean) {
         val right = sourceText.substring(currentCursor, sourceText.length)
         this.setText("$left$right")
         this.setSelection(currentCursor-1)
-        crash()
     }
 }
 
