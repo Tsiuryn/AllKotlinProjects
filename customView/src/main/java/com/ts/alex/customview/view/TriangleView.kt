@@ -9,12 +9,35 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import com.ts.alex.customview.R
+import kotlin.math.acos
+import kotlin.math.sqrt
 
-class TriangleView(context: Context, attr: AttributeSet) : View(context, attr) {
+class TriangleView(context: Context, attr: AttributeSet) :
+    View(context, attr) {
     private val line1 = Paint()
     private val line2 = Paint()
     private val line3 = Paint()
-    private val text = Paint()
+    private val _pFatCream = Paint()
+    private val _pFatMilk = Paint()
+    private val _pFatSkim = Paint()
+    private val _pQuantCream = Paint()
+    private val _pQuantMilk = Paint()
+    private val _pQuantSkim = Paint()
+    private val _rFatCream = Rect()
+    private val _rFatMilk = Rect()
+    private val _rFatSkim = Rect()
+    private val _rQuantCream = Rect()
+    private val _rQuantMilk = Rect()
+    private val _rQuantSkim = Rect()
+    private val textSize = 50f
+
+    private var fatCream = "Жсл"
+    private var fatMilk = "Жм"
+    private var fatSkim = "Жобм"
+    private var quantCream = "Ксл"
+    private var quantMilk = "Км"
+    private var quantSkim = "Кобм"
+
     init {
         line1.style = Paint.Style.STROKE
         line1.strokeWidth = 10f
@@ -27,10 +50,37 @@ class TriangleView(context: Context, attr: AttributeSet) : View(context, attr) {
         line3.style = Paint.Style.STROKE
         line3.strokeWidth = 10f
         line3.color = context.getColor(R.color.line3)
+
+        _pFatCream.style = Paint.Style.FILL
+        _pFatCream.textSize = textSize
+        _pFatCream.isAntiAlias = true
+        _pFatCream.color = context.getColor(R.color.line3)
+
+        _pFatMilk.style = Paint.Style.FILL
+        _pFatMilk.textSize = textSize
+        _pFatMilk.isAntiAlias = true
+        _pFatMilk.color = context.getColor(R.color.line2)
+
+        _pFatSkim.style = Paint.Style.FILL
+        _pFatSkim.textSize = textSize
+        _pFatSkim.isAntiAlias = true
+        _pFatSkim.color = context.getColor(R.color.line1)
+
+        _pQuantCream.style = Paint.Style.FILL
+        _pQuantCream.textSize = textSize
+        _pQuantCream.isAntiAlias = true
+        _pQuantCream.color = context.getColor(R.color.line3)
+
+        _pQuantMilk.style = Paint.Style.FILL
+        _pQuantMilk.textSize = textSize
+        _pQuantMilk.isAntiAlias = true
+        _pQuantMilk.color = context.getColor(R.color.line2)
+
+        _pQuantSkim.style = Paint.Style.FILL
+        _pQuantSkim.textSize = textSize
+        _pQuantSkim.isAntiAlias = true
+        _pQuantSkim.color = context.getColor(R.color.line1)
     }
-
-
-
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
@@ -39,56 +89,109 @@ class TriangleView(context: Context, attr: AttributeSet) : View(context, attr) {
         val paddingX = convertToDP(40f)
         val paddingY = convertToDP(40f)
 
+        val A = 0f + paddingX to _y - paddingY
+        val B = _x / 2f to 0f + paddingY
+        val C = _x - paddingX to _y - paddingY
+
         val path1 = Path()
-        path1.moveTo(0f + paddingX, _y - paddingY)
-        path1.lineTo(_x / 2f , 0f + paddingY )
+        path1.moveTo(A.first, A.second)
+        path1.lineTo(B.first, B.second)
         path1.close()
 
         canvas.drawPath(path1, line1)
 
         val path2 = Path()
-        path2.moveTo(_x / 2f , 0f + paddingY )
-        path2.lineTo(_x - paddingX, _y - paddingY )
+        path2.moveTo(B.first, B.second)
+        path2.lineTo(C.first, C.second)
         path2.close()
 
         canvas.drawPath(path2, line2)
 
         val path3 = Path()
-        path3.moveTo(_x - paddingX, _y - paddingY )
-        path3.lineTo(0f + paddingX, _y - paddingY)
+        path3.moveTo(A.first, A.second)
+        path3.lineTo(C.first, C.second)
         path3.close()
 
         canvas.drawPath(path3, line3)
 
-        val path4 = Path()
-        path4.moveTo(_x / 2f , 0f + paddingY )
-        path4.lineTo(_x / 2f , _y - paddingY )
-        path4.close()
 
-        canvas.drawPath(path4, line2)
+        val sizeCathetus = getLengthLine(
+            x1 = A.first,
+            y1 = A.second,
+            x2 = C.first,
+            y2 = C.second
+        )
+        val sizeHypotenuse = getLengthLine(
+            x1 = B.first,
+            y1 = B.second,
+            x2 = C.first,
+            y2 = C.second
+        )
 
-        val path5 = Path()
-        path5.moveTo(0f , _y / 2f)
-        path5.lineTo(_x, _y / 2f )
-        path5.close()
 
-        canvas.drawPath(path5, line2)
+        val _qM = getHeightAndWidthText(quantMilk, _pQuantMilk, _rQuantMilk)
 
-        val mainText = "Hello"
-        text.style = Paint.Style.FILL
-        text.textSize = 70f
-        text.isAntiAlias = true
-        val rect = Rect()
-        text.getTextBounds(mainText, 0, mainText.length, rect)
-        val textWidth = text.measureText(mainText)
-        val textHeight = rect.height()
+        canvas.drawTextOnPath(
+            quantMilk,
+            path2,
+            sizeHypotenuse / 2 - _qM.second / 2,
+            _qM.first + 20f,
+            _pQuantMilk
+        )
 
-        canvas.drawText(mainText, _x / 2f - textWidth / 2f, _y / 2f + textHeight/2f, text)
+        val _qS = getHeightAndWidthText(quantSkim, _pQuantSkim, _rQuantSkim)
 
+        canvas.drawTextOnPath(
+            quantSkim,
+            path1,
+            sizeHypotenuse / 2 - _qS.second / 2,
+            _qS.first.toFloat() + 20f,
+            _pQuantSkim
+        )
+
+        val _qC = getHeightAndWidthText(quantCream, _pQuantCream, _rQuantCream)
+
+        canvas.drawTextOnPath(
+            quantCream,
+            path3,
+            sizeCathetus / 2 - _qC.second / 2,
+            - _qC.first.toFloat() + 20f,
+            _pQuantCream
+        )
+        val _fC = getHeightAndWidthText(fatCream, _pFatCream, _rFatCream)
+        canvas.drawText(fatCream, B.first - _fC.second / 2, B.second - 20f, _pFatCream)
+
+        val _fM = getHeightAndWidthText(fatMilk, _pFatMilk, _rFatMilk)
+        canvas.drawText(fatMilk, A.first, A.second + _fM.first + 20f , _pFatMilk)
+
+        val _fS = getHeightAndWidthText(fatSkim, _pFatSkim, _rFatSkim)
+        canvas.drawText(fatSkim, C.first - _fS.second, A.second + _fS.first + 20f , _pFatSkim)
 
     }
 
-    private fun  convertToDP(dip: Float): Float{
+    private fun getHeightAndWidthText (text: String, paint: Paint, rect: Rect, ): Pair<Float, Float>{
+        paint.getTextBounds(text, 0, text.length, rect)
+        val textWidth = _pFatCream.measureText(text)
+        val textHeight = rect.height().toFloat()
+        return textHeight to textWidth
+    }
+
+
+    private fun getLengthLine(x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        return sqrt(
+            Math.pow((x2 - x1).toDouble(), 2.0) + Math.pow(
+                (y2 - y1).toDouble(),
+                2.0
+            )
+        ).toFloat()
+    }
+
+    private fun getAngleHypotenuse(sizeCathetus: Float, sizeHypotenuse: Float): Float {
+        val rad = acos(sizeCathetus / sizeHypotenuse)
+        return rad.toFloat() * 180f / kotlin.math.PI.toFloat() + 5f
+    }
+
+    private fun convertToDP(dip: Float): Float {
         val r: Resources = resources
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
@@ -96,6 +199,22 @@ class TriangleView(context: Context, attr: AttributeSet) : View(context, attr) {
             r.displayMetrics
         )
     }
+}
+
+interface ViewListener {
+    fun onClickFatCream()
+    fun onClickFatMilk()
+    fun onClickFatSkim()
+    fun onClickQuantCream()
+    fun onClickQuantMilk()
+    fun onClickQuantSkim()
+
+    fun onLongClickFatCream()
+    fun onLongClickFatMilk()
+    fun onLongClickFatSkim()
+    fun onLongClickQuantCream()
+    fun onLongClickQuantMilk()
+    fun onLongClickQuantSkim()
 }
 
 
