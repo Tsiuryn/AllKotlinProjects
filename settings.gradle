@@ -1,3 +1,4 @@
+include ':DialogCustom'
 include ':customView'
 include ':ForTest'
 include ':parserXML'
