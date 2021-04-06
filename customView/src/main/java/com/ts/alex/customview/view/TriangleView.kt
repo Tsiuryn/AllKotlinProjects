@@ -6,14 +6,21 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
+import android.widget.TextView
 import com.ts.alex.customview.R
+import java.lang.Math.pow
 import kotlin.math.acos
 import kotlin.math.sqrt
 
 class TriangleView(context: Context, attr: AttributeSet) :
     View(context, attr) {
+
+
+    private var listModels = ArrayList<TriangleModel>()
     private val line1 = Paint()
     private val line2 = Paint()
     private val line3 = Paint()
@@ -30,13 +37,26 @@ class TriangleView(context: Context, attr: AttributeSet) :
     private val _rQuantMilk = Rect()
     private val _rQuantSkim = Rect()
     private val textSize = 50f
+    private var listener: ViewListener? = null
 
-    private var fatCream = "Жсл"
-    private var fatMilk = "Жм"
-    private var fatSkim = "Жобм"
-    private var quantCream = "Ксл"
-    private var quantMilk = "Км"
-    private var quantSkim = "Кобм"
+    fun setListener (listener: ViewListener){
+        this.listener = listener
+    }
+
+    private val timer = HelperTimer()
+
+    var fatCream = "Жсл"
+    var fatMilk = "Жм"
+    var fatSkim = "Жобм"
+    var quantCream = "Ксл"
+    var quantMilk = "Км"
+    var quantSkim = "Кобм"
+
+
+
+    fun updateView() {
+        invalidate()
+    }
 
     init {
         line1.style = Paint.Style.STROKE
@@ -97,6 +117,9 @@ class TriangleView(context: Context, attr: AttributeSet) :
         path1.moveTo(A.first, A.second)
         path1.lineTo(B.first, B.second)
         path1.close()
+        _rFatMilk.set(A.first.toInt() - paddingX.toInt(), (A.second-paddingY).toInt(), A.first.toInt() + paddingX.toInt(), (A.second+paddingY).toInt())
+
+
 
         canvas.drawPath(path1, line1)
 
@@ -141,11 +164,12 @@ class TriangleView(context: Context, attr: AttributeSet) :
 
         val _qS = getHeightAndWidthText(quantSkim, _pQuantSkim, _rQuantSkim)
 
+
         canvas.drawTextOnPath(
             quantSkim,
             path1,
             sizeHypotenuse / 2 - _qS.second / 2,
-            _qS.first.toFloat() + 20f,
+            _qS.first + 20f,
             _pQuantSkim
         )
 
@@ -155,24 +179,48 @@ class TriangleView(context: Context, attr: AttributeSet) :
             quantCream,
             path3,
             sizeCathetus / 2 - _qC.second / 2,
-            - _qC.first.toFloat() + 20f,
+            -_qC.first.toFloat() + 20f,
             _pQuantCream
         )
         val _fC = getHeightAndWidthText(fatCream, _pFatCream, _rFatCream)
         canvas.drawText(fatCream, B.first - _fC.second / 2, B.second - 20f, _pFatCream)
 
         val _fM = getHeightAndWidthText(fatMilk, _pFatMilk, _rFatMilk)
-        canvas.drawText(fatMilk, A.first, A.second + _fM.first + 20f , _pFatMilk)
+        canvas.drawText(fatMilk, A.first, A.second + _fM.first + 20f, _pFatMilk)
 
         val _fS = getHeightAndWidthText(fatSkim, _pFatSkim, _rFatSkim)
-        canvas.drawText(fatSkim, C.first - _fS.second, A.second + _fS.first + 20f , _pFatSkim)
+        canvas.drawText(fatSkim, C.first - _fS.second, A.second + _fS.first + 20f, _pFatSkim)
 
+        val numbX = (B.first - A.first).toInt() / 2
+        val numbY = (C.second - B.second).toInt() / 2
+
+        listModels.add(TriangleModel(fatCream, Coordinates(B.first.toInt(), B.second.toInt()), State.FAT_CREAM))
+        canvas.drawCircle(B.first, B.second, 100f, line1)
+        listModels.add(TriangleModel(fatMilk, Coordinates(A.first.toInt(), A.second.toInt()), State.FAT_MILK))
+        canvas.drawCircle(A.first, A.second, 200f, line1)
+        listModels.add(TriangleModel(fatSkim, Coordinates(C.first.toInt(), C.second.toInt()), State.FAT_SKIM))
+        canvas.drawCircle(C.first, C.second, 200f, line1)
+
+
+        listModels.add(TriangleModel(quantCream, Coordinates(B.first.toInt(), C.second.toInt()), State.QUANT_CREAM))
+        canvas.drawCircle(B.first, C.second, 200f, line1)
+
+        listModels.add(TriangleModel(quantMilk, Coordinates(B.first.toInt() + numbX, B.second.toInt() + numbY), State.QUANT_MILK))
+        canvas.drawCircle((B.first + numbX), B.second + numbY, 200f, line1)
+
+        listModels.add(TriangleModel(quantSkim, Coordinates(B.first.toInt() - numbX, B.second.toInt() + numbY), State.QUANT_SKIM))
+        canvas.drawCircle(B.first - numbX, B.second + numbY, 200f, line1)
     }
 
-    private fun getHeightAndWidthText (text: String, paint: Paint, rect: Rect, ): Pair<Float, Float>{
+    private fun getHeightAndWidthText(
+        text: String,
+        paint: Paint,
+        rect: Rect,
+    ): Pair<Float, Float> {
         paint.getTextBounds(text, 0, text.length, rect)
-        val textWidth = _pFatCream.measureText(text)
+        val textWidth = paint.measureText(text)
         val textHeight = rect.height().toFloat()
+        rect.set(0, 0, textWidth.toInt(), textHeight.toInt())
         return textHeight to textWidth
     }
 
@@ -199,22 +247,47 @@ class TriangleView(context: Context, attr: AttributeSet) :
             r.displayMetrics
         )
     }
+
+    private fun isIntoInCircle (coordinates: Coordinates, x: Int, y: Int, radius: Float): Boolean {
+        return sqrt(pow((coordinates.coordX - x).toDouble(), 2.0) + pow((coordinates.coordY - y).toDouble(), 2.0)) < convertToDP(radius.toFloat()).toDouble()
+    }
+
+    private fun onClickText(touchX: Int, touchY: Int): Boolean {
+        for (model in listModels) {
+            if (isIntoInCircle(model.coord, touchX, touchY, 30f)) {
+
+                listener?.onClick(model)
+                return true
+            }
+        }
+
+        return false
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event == null){
+            return false
+        }
+        val touchX = event.x.toInt()
+        val touchY = event.y.toInt()
+        when (event.action) {
+
+            MotionEvent.ACTION_UP -> {
+                onClickText(touchX, touchY)
+            }
+        }
+        return true
+    }
 }
 
 interface ViewListener {
-    fun onClickFatCream()
-    fun onClickFatMilk()
-    fun onClickFatSkim()
-    fun onClickQuantCream()
-    fun onClickQuantMilk()
-    fun onClickQuantSkim()
 
-    fun onLongClickFatCream()
-    fun onLongClickFatMilk()
-    fun onLongClickFatSkim()
-    fun onLongClickQuantCream()
-    fun onLongClickQuantMilk()
-    fun onLongClickQuantSkim()
+    fun onClick(model: TriangleModel)
+
+
+    fun onLongClick()
+
 }
 
 

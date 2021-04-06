@@ -31,11 +31,11 @@ class EqualizerView (context: Context, attr: AttributeSet) : View(context, attr)
     }
     private val rect = Rect()
     private var percent = arrayListOf(100, 100, 100, 100, 100)
-    private var listener : MyListener? = null
+    private var listener : EqualizerListener? = null
     private var listRect = ArrayList<Rect>()
     private var theFirstListRect = ArrayList<Rect>()
 
-    fun setListener (listener: MyListener){
+    fun setListener (listener: EqualizerListener){
         this.listener = listener
     }
 
