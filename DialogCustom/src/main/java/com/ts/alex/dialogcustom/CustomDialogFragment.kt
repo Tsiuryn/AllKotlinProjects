@@ -48,7 +48,7 @@ class CustomDialogFragment(val onItemClick: onClickItem): DialogFragment() {
         val b = arguments
         val list = b?.getStringArrayList(MainActivity.FROM_ACTIVITY_TO_FRAGMENT)
         createAdapter(list as List<String>)
-        dialog?.setTitle("Hello")
+        dialog?.setTitle("Выберите значение:")
 
         dialog?.window!!.setBackgroundDrawableResource(R.drawable.background)
 

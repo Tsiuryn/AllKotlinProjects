@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity(), onClickItem {
         setContentView(binding.root)
         val list = arrayListOf<String>()
         (0 until 100).forEach { i ->
-            list.add(i.toString())
+            list.add("name_$i")
         }
         binding.vButton.setOnClickListener{
             val fm: FragmentManager = supportFragmentManager

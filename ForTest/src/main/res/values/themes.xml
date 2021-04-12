@@ -13,4 +13,24 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Widget.App.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
+</style>
+
+    <style name="ThemeOverlay.App.CheckBox" parent="">
+        <item name="android:textColor">#D66868</item>
+        <item name="colorOnSurface">#21E835</item>
+        <item name="colorSecondary">#0725E3</item>
+    </style>
+
+    <style name="Widget.App.CheckBox1" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
+    </style>
+
+    <style name="ThemeOverlay.App.CheckBox1" parent="">
+        <item name="android:textColor">#D66868</item>
+        <item name="colorOnSurface">#4269A3</item>
+        <item name="colorSecondary">#D51F6D</item>
+    </style>
 </resources>

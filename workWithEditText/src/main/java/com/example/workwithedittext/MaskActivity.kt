@@ -1,12 +1,9 @@
 package com.example.workwithedittext
 
 import android.os.Bundle
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doOnTextChanged
-import com.example.workwithedittext.databinding.ActivityInputLayoutBinding
 import com.example.workwithedittext.databinding.ActivityMaskBinding
-import com.example.workwithedittext.mask.checkEditTextWithMask
+import com.example.workwithedittext.mask.MaskEditText
 import com.google.android.material.textfield.TextInputEditText
 
 class MaskActivity: AppCompatActivity() {
@@ -21,8 +18,9 @@ class MaskActivity: AppCompatActivity() {
         setContentView(view)
 
         vEditText = binding.vEditText
-        val mask = "+375 (2\\9)999 99 99"
-        checkEditTextWithMask(vEditText, mask)
+//        val mask = "+375 (2\\9)999 99 99"
+        val mask = "+375 (aa) aaa a\\a aa"
+        MaskEditText(vEditText, mask)
 
 
     }

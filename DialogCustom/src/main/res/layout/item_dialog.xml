@@ -8,13 +8,13 @@
         android:id="@+id/vText"
         android:layout_margin="8dp"
         android:padding="8dp"
-        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_height="1dp"
-        android:background="@color/black"/>
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:background="#8F8F8F"/>-->
 
 </LinearLayout>
