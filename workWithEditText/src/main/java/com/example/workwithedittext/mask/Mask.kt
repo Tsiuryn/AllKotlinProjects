@@ -1,6 +1,6 @@
 package com.example.workwithedittext.mask
 
-import android.util.Log
+import android.text.InputType
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.textfield.TextInputEditText
 
@@ -10,13 +10,26 @@ data class CharsMaskResult(
 
     )
 
-val mask = "+375 (2\\9)999 99 99"
-
-class MaskEditText(private val editText: TextInputEditText, private val mask: String) {
-    private var textBefore = ""
-    private var textAfter = ""
+class MaskEditText(
+    private val editText: TextInputEditText,
+    private val mask: String,
+    private val value: String? = null
+) {
     private var cursorPosition = 0
     private var listMask = ArrayList<CharsMaskResult>()
+
+    fun getValue(): String {
+        var textValue = ""
+
+        if (listMask.isNotEmpty()) {
+            for (i in 0 until listMask.size) {
+                if (listMask[i].symbol.matches(Regex("[a-zA-Z0-9]"))) {
+                    textValue += listMask[i].symbol
+                }
+            }
+        }
+        return textValue
+    }
 
     init {
         validateEditTextByMask()
@@ -26,6 +39,8 @@ class MaskEditText(private val editText: TextInputEditText, private val mask: St
         var isBackSpace: Boolean
         var ignore = false
         listMask = startProgram(mask)
+        updateListMaskByValue()
+        editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         editText.setText(getSymbolsFromMask())
 
         editText.doOnTextChanged { text, start, before, count ->
@@ -34,30 +49,36 @@ class MaskEditText(private val editText: TextInputEditText, private val mask: St
             ignore = true
             cursorPosition = editText.selectionStart
             var addedSymbol = ""
-            textAfter = editText.text.toString()
             if (isBackSpace) {
-                setBackSpace()
+                backSpace()
             } else {
                 addedSymbol = text!!.substring(cursorPosition - 1, cursorPosition)
-                textBefore = "${text.substring(0, cursorPosition - 1)}${
-                    text.substring(
-                        cursorPosition,
-                        textAfter.length
-                    )
-                }"
                 addSymbol(
                     addedSymbol = addedSymbol
                 )
             }
-
-            Log.d(
-                "TAG11",
-                "validateEditTextByMask: $textBefore, $textAfter $addedSymbol $cursorPosition"
-            )
-
             editText.setText(getSymbolsFromMask())
             editText.setSelection(cursorPosition)
             ignore = false
+        }
+    }
+
+    private fun updateListMaskByValue() {
+        if (!value.isNullOrEmpty()) {
+            val valueArray = value.toCharArray()
+            var indexValue = 0
+            for (i in 0 until listMask.size) {
+                val charsMaskResult = listMask[i]
+                if (charsMaskResult.symbol.matches(Regex("[a-zA-Z0-9_]"))) {
+                    if (indexValue < valueArray.size) {
+                        listMask[i] = CharsMaskResult(
+                            symbol = valueArray[indexValue].toString(),
+                            rool = charsMaskResult.rool
+                        )
+                        indexValue++
+                    }
+                }
+            }
         }
     }
 
@@ -109,7 +130,6 @@ class MaskEditText(private val editText: TextInputEditText, private val mask: St
                     }
                 }
                 '\\' -> {
-                    Log.d("TAG11", "startProgram: ${maskArray[i]}")
                     continue
                 }
                 else -> {
@@ -121,27 +141,49 @@ class MaskEditText(private val editText: TextInputEditText, private val mask: St
     }
 
     private fun addSymbol(addedSymbol: String) {
-        when {
-            cursorPosition > listMask.size -> cursorPosition = getFirstAddedPosition()
-            listMask[cursorPosition - 1].rool == "i" -> cursorPosition = getFirstAddedPosition()
-            else -> {
-                if (isValidAddingSymbol(addedSymbol = addedSymbol )) {
-                    val charsMaskResult = listMask[cursorPosition - 1]
-                    listMask[cursorPosition - 1] = CharsMaskResult(
-                        symbol = addedSymbol,
-                        rool = charsMaskResult.rool,
+        if(cursorPosition <= listMask.size){
+            for (i in 0 until listMask.size) {
+                if (listMask[i].rool != "i" && listMask[i].symbol == "_") {
+                    if (isValidAddingSymbol(addedSymbol, i)) {
+                        val charsMaskResult = listMask[i]
+                        listMask[i] = CharsMaskResult(
+                            symbol = addedSymbol,
+                            rool = charsMaskResult.rool,
                         )
-                    cursorPosition = getFirstAddedPosition()
-                }else {
-                    cursorPosition --
+                        cursorPosition = getFirstAddedPosition()
+                        break
+                    } else {
+                        cursorPosition = getFirstAddedPosition()
+                        break
+                    }
                 }
-
             }
+        }else {
+            cursorPosition = getFirstAddedPosition()
+        }
+
+    }
+
+    private fun backSpace() {
+        var isHaveAddedSymbol: Boolean = false
+        for (i in listMask.size - 1 downTo 0) {
+            if (listMask[i].rool != "i" && listMask[i].symbol != "_") {
+                listMask[i] = CharsMaskResult(
+                    symbol = "_",
+                    rool = listMask[i].rool
+                )
+                cursorPosition = i
+                isHaveAddedSymbol = true
+                break
+            }
+        }
+        if (!isHaveAddedSymbol) {
+            cursorPosition = getFirstAddedPosition()
         }
     }
 
-    private fun isValidAddingSymbol(addedSymbol: String): Boolean {
-        return when (listMask[cursorPosition - 1].rool) {
+    private fun isValidAddingSymbol(addedSymbol: String, index: Int): Boolean {
+        return when (listMask[index].rool) {
             "9" -> addedSymbol.matches(Regex("[0-9]"))
             "a" -> addedSymbol.matches(Regex("[a-zA-Z]"))
             "*" -> addedSymbol.matches(Regex("[a-zA-Z0-9]"))
@@ -151,42 +193,12 @@ class MaskEditText(private val editText: TextInputEditText, private val mask: St
 
     private fun getFirstAddedPosition(): Int {
         var position = -1
-        for (i in listMask.size - 1 downTo  0) {
+        for (i in listMask.size - 1 downTo 0) {
             if (listMask[i].rool != "i" && listMask[i].symbol == "_") {
                 position = i
             }
         }
-        return if(position < listMask.size && position != -1) position else listMask.size
+        return if (position < listMask.size && position != -1) position else listMask.size
     }
 
-    private fun getLastAddedPosition(): Int {
-        var firstAddedSymbol = -1
-        for (i in listMask.size - 1 downTo  0) {
-            if (listMask[i].rool != "i"){
-                if(listMask[i].symbol == "_") {
-                    firstAddedSymbol =  i
-                } else {
-                    return i + 1
-                }
-            }
-        }
-        return firstAddedSymbol
-    }
-
-    private fun setBackSpace(
-    ) {
-        val rool = listMask[cursorPosition].rool
-        if(rool != "i"){
-            listMask[cursorPosition] = CharsMaskResult(
-                symbol = "_",
-                rool = rool
-            )
-        } else{
-            listMask[getLastAddedPosition()] = CharsMaskResult(
-                symbol = "_",
-                rool =  listMask[getLastAddedPosition() - 1].rool
-            )
-        }
-        cursorPosition = getLastAddedPosition()
-    }
 }

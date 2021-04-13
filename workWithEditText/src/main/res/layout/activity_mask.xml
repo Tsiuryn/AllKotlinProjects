@@ -15,7 +15,7 @@
         android:layout_marginEnd="8dp"
         app:errorEnabled="true"
         app:errorIconDrawable="@null"
-        android:hint="add Text"
+        android:hint="mask = +375 (99) 99\\9 99 a9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,11 +26,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"
+            android:textSize="30sp"
             android:imeOptions="actionNext"
             android:maxLines="10"
             android:paddingTop="8dp"
             android:paddingBottom="8dp" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/getValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="get Value"/>
 
 
 </LinearLayout>
