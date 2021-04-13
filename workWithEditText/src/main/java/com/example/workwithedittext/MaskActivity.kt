@@ -1,6 +1,7 @@
 package com.example.workwithedittext
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.workwithedittext.databinding.ActivityMaskBinding
 import com.example.workwithedittext.mask.MaskEditText
@@ -19,8 +20,15 @@ class MaskActivity: AppCompatActivity() {
 
         vEditText = binding.vEditText
 //        val mask = "+375 (2\\9)999 99 99"
-        val mask = "+375 (aa) aaa a\\a aa"
-        MaskEditText(vEditText, mask)
+        val mask = "+375 (99) 99\\9 99 99"
+        binding.vTextInputLayout.hint = mask
+        val value = "99qq"
+        val myMask = MaskEditText(vEditText, mask)
+
+        binding.getValue.setOnClickListener{
+            Toast.makeText(this, myMask.getValue(), Toast.LENGTH_SHORT).show()
+        }
+
 
 
     }
