@@ -1,3 +1,5 @@
+include ':ObjectBox'
+include ':JobSheduler2'
 include ':DialogCustom'
 include ':customView'
 include ':ForTest'
