@@ -126,7 +126,7 @@ class NumberControl(
     }
 
     private fun checkDeletedSymbol(deletedSymbol: String) {
-        if (deletedSymbol == "," || deletedSymbol == ".") {
+        if (deletedSymbol == separator.char) {
             isAddedComma = false
         }
     }
