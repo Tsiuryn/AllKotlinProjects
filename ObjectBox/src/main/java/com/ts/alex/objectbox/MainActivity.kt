@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import io.objectbox.relation.ListFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,15 +20,26 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.vAddToDB).setOnClickListener{
 
             val myEnt2 = MyEnt(name = editText.text.toString())
-            val another = Another(data = getCurrentTime())
-            myEnt2.another?.target = another
+            for (i in 0 until 100){
+                val another = Another(data = getCurrentTime())
+
+                myEnt2.another?.add(another)
+            }
+
 
             box.put(myEnt2)
 
             val myEnt = box.all
+            Toast.makeText(this, "${myEnt.size}", Toast.LENGTH_SHORT).show()
+
             var text = ""
             myEnt.forEach{
-                text += "${it.name}  ${it.another?.target!!.data}\n"
+//                text += "${it.name}  ${it.another?.size}\n"
+                val list = it.another?.toList()
+                it.another?.forEach {
+                    text += "${it.data} "
+                }
+//                text += "${myEnt.name}  ${myEnt.another?.size}\n"
             }
             textView.text = text
 
@@ -37,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentTime():String{
-        val format = SimpleDateFormat("DD-MMM-yyyy hh_mm_ss", Locale.getDefault())
+        val format = SimpleDateFormat("DD-MMM-yyyy hh_mm_ss_SSS", Locale.getDefault())
         val calendar = Calendar.getInstance().time
         return format.format(calendar)
 

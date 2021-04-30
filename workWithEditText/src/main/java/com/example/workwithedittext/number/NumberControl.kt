@@ -2,6 +2,7 @@ package com.example.workwithedittext.number
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
@@ -9,17 +10,15 @@ import androidx.core.widget.doOnTextChanged
 @SuppressLint("SetTextI18n")
 class NumberControl(
     private val editText: EditText,
-    private val defaultValue: Double? = null,
+    private val defaultValue: String? = null,
     private val minValue: Int = -1,
     private val maxValue: Int = -1,
-    private val minLabel: String = "Below minimum value - $minValue",
-    private val maxLabel: String = "Greater than the maximum value $maxValue",
     private val fraction: Boolean = false,
     private val postfix: String = "",
     private val separator: Separator = Separator.DOT,
     private val digitCapacity: Int = -1,
     private val supplDigitCapacity: Boolean = false,
-    private val listener: (ErrorMessage) -> Unit
+    private val listener: (value: String, ErrorMessage) -> Unit
 ) {
 
     private val TAG = "TAG11"
@@ -27,18 +26,27 @@ class NumberControl(
 
     private var cursorPosition: Int = 0
     private var listNumber = ArrayList<String>()
-    private var addedSeparator = ""
+    private var ignore = false
 
     init {
-        var ignore = false
-        defaultValue?.toString()?.toCharArray()?.forEach { listNumber.add(it.toString()) }
+        setUpListByDefaultValue(defaultValue)
         editText.setText(getTextFromList(true))
         editText.setSelection(0)
 
         editText.doOnTextChanged { text, start, before, count ->
+            Log.d(TAG, "$before, $count: ")
             val isBackSpace = before > count
             if (ignore) return@doOnTextChanged
             ignore = true
+            if (before - count > 2 || count - before > 2) {
+                listNumber.clear()
+                isAddedComma = false
+                val endText = getTextFromList(true)
+                editText.setText(endText)
+                setSelectionCursor(endText)
+                ignore = false
+                return@doOnTextChanged
+            }
 
             cursorPosition = editText.selectionStart
             if (isBackSpace) {
@@ -49,39 +57,56 @@ class NumberControl(
             val endText = getTextFromList(true)
             editText.setText(endText)
             setSelectionCursor(endText)
+            listener(endText, ErrorMessage.CHANGED)
             ignore = false
         }
 
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                listener(ErrorMessage.HAS_FOCUS)
-            }else{
+                listener(editText.text.toString(), ErrorMessage.HAS_FOCUS)
+            } else {
                 checkMaxMin(getTextFromList(false).toDoubleOrNull())
                 supplyDigitCapacity()
             }
         }
     }
 
-    private fun supplyDigitCapacity() {
-        if(supplDigitCapacity && digitCapacity > -1){
-            if(isAddedComma){
-
-            }else{
-                for (i in 0 until digitCapacity + 1){
-                    listNumber.add(if(i == 0) separator.char else "0")
-                }
-
-                    editText.setText(getTextFromList(true))
-                cursorPosition = listNumber.size
+    private fun setUpListByDefaultValue(defaultValue: String?) {
+        defaultValue?.toCharArray()?.forEach {
+            if (it.toString().matches(Regex("[0-9]"))) {
+                listNumber.add(it.toString())
+            } else {
+                listNumber.add(separator.char)
+                isAddedComma = true
             }
-//
+
         }
     }
 
-    private fun checkMaxMin (value: Double?){
-        if(value != null){
-            if(value > maxValue && maxValue != -1 ) listener(ErrorMessage.MAXIMUM)
-            if(value < minValue && minValue != -1 ) listener(ErrorMessage.MINIMUM)
+    private fun supplyDigitCapacity() {
+        if (supplDigitCapacity && listNumber.size > 0) {
+            val numb = getTextFromList(false).replace(",", ".").toDouble()
+            if (digitCapacity > -1) {
+                val text = String.format("%.${digitCapacity}f", numb)
+                listNumber.clear()
+                setUpListByDefaultValue(text)
+                ignore = true
+                editText.setText(getTextFromList(true))
+                ignore = false
+            }
+        }
+    }
+
+    private fun checkMaxMin(value: Double?) {
+        if (value != null) {
+            if (value > maxValue && maxValue != -1) listener(
+                editText.text.toString(),
+                ErrorMessage.MAXIMUM
+            )
+            if (value < minValue && minValue != -1) listener(
+                editText.text.toString(),
+                ErrorMessage.MINIMUM
+            )
         }
     }
 
@@ -93,8 +118,6 @@ class NumberControl(
                 checkDeletedSymbol(deletedSymbol = listNumber[cursorPosition])
                 listNumber.removeAt(cursorPosition)
             } else {
-//                checkDeletedSymbol(deletedSymbol = listNumber[listNumber.size - 1])
-//                listNumber.removeAt(listNumber.size - 1) //todo is need delete symbol?
                 cursorPosition = listNumber.size
             }
         } else {
@@ -120,54 +143,66 @@ class NumberControl(
 
         when {
             addedSymbol.matches(Regex("[0-9]")) -> {
-                checkIndexAndAdd(index, addedSymbol, false)
+                checkIndexAndAdd(index, addedSymbol)
             }
-            addedSymbol == "." && separator == Separator.DOT -> {
-                if (!isAddedComma && fraction) {
-                    checkIndexAndAdd(index, addedSymbol, true)
+            addedSymbol == separator.char && fraction-> {
+                if (!isAddedComma ) {
                     isAddedComma = true
+                    checkIndexAndAdd(index, addedSymbol)
                 } else cursorPosition--
 
             }
-            addedSymbol == "," && separator == Separator.COMMA -> {
-                if (!isAddedComma && fraction) {
-                    checkIndexAndAdd(index, addedSymbol, true)
-                    isAddedComma = true
-                } else cursorPosition--
-            }
+
             else -> cursorPosition--
         }
     }
 
-    private fun checkIndexAndAdd(index: Int, addedSymbol: String, isComma: Boolean) {
+    private fun checkIndexAndAdd(index: Int, addedSymbol: String) {
+        if (addedSymbol == separator.char) {
+            if (index < 1 || index > listNumber.size) {
+                listNumber.add("0")
+                listNumber.add(separator.char)
+                cursorPosition += 1
+                return
+            }
+        }
+        if (addedSymbol == "0" && index == 0) {
+            if(fraction){
+                listNumber.add("0")
+                listNumber.add(separator.char)
+                cursorPosition += 1
+                isAddedComma = true
+                return
+            } else{
+                cursorPosition --
+                return
+            }
+        }
+
         if (index < listNumber.size && index >= 0) {
+
 
             if (isNotMoreThanDigitCapacity()) {
                 listNumber.add(index, addedSymbol)
                 cursorPosition = index + 1
+
             } else cursorPosition--
-            if (isComma) {
-                addedSeparator = addedSymbol
-            }
+
 
         } else {
 
             if (isNotMoreThanDigitCapacity()) {
                 listNumber.add(addedSymbol)
             } else cursorPosition--
-            if (isComma) {
-                addedSeparator = addedSymbol
-            }
-
         }
     }
 
     private fun isNotMoreThanDigitCapacity(): Boolean {
-        if (isAddedComma && digitCapacity > -1 ) {
+        if (isAddedComma && digitCapacity > -1) {
             val indexSeparator = getIndexSeparator()
-            if(cursorPosition > indexSeparator + 1){
-                val isMore = digitCapacity > listNumber.size - indexSeparator
-                if(!isMore) listener(ErrorMessage.DIGIT_CAPACITY)
+            if (cursorPosition > indexSeparator + 1) {
+                val isMore = digitCapacity > listNumber.size - indexSeparator - 1
+                if (!isMore) listener(editText.text.toString(), ErrorMessage.DIGIT_CAPACITY)
                 return isMore
             }
 
@@ -176,7 +211,7 @@ class NumberControl(
     }
 
     private fun getIndexSeparator(): Int {
-        return listNumber.indexOf(addedSeparator)
+        return listNumber.indexOf(separator.char)
     }
 
     private fun checkCursorPosition() {
@@ -191,24 +226,17 @@ class NumberControl(
         listNumber.forEach {
             text += it
         }
-        return if(withPostfix)"$text $postfix" else text
+        return if (withPostfix) "$text $postfix" else text
     }
-
-    fun check(context: Context) {
-
-        Toast.makeText(
-            context,
-            "Cursor - $cursorPosition, listSize - ${listNumber.size}",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
 }
 
-enum class Separator (val char: String) {
-    DOT("."), COMMA (",")
+enum class Separator(val char: String) {
+    DOT("."), COMMA(",")
 }
 
+/**
+ *
+ */
 enum class ErrorMessage {
-    HAS_FOCUS, MINIMUM, MAXIMUM, DIGIT_CAPACITY
+    HAS_FOCUS, MINIMUM, MAXIMUM, DIGIT_CAPACITY, CHANGED
 }

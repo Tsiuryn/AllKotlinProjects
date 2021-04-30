@@ -21,23 +21,20 @@ class NumberFieldActivity : AppCompatActivity() {
         setContentView(R.layout.activity_number_field)
         vInputLayout = findViewById(R.id.vInputLayout)
         vEditText = vInputLayout.editText!!
-        vEditText.keyListener = DigitsKeyListener.getInstance("0123456789.,")
         val number = NumberControl(
             editText = vEditText,
-            defaultValue = 15.0,
-            postfix = "USD",
-            fraction = true,
+            defaultValue = "15.0",
+            postfix = "BYN",
+            fraction = false,
             digitCapacity = 10,
             supplDigitCapacity = true,
-            separator = Separator.COMMA,
+            separator = Separator.DOT,
             maxValue = 250,
             minValue = 10
-        ){
-            Log.d("TAG11", "onCreate: ${it}")
-
+        ){value, errorMessage ->
+            Log.d("TAG11", "onCreate: $value, $errorMessage")
         }
         findViewById<Button>(R.id.button1).setOnClickListener{
-            number.check(this)
         }
 
 
