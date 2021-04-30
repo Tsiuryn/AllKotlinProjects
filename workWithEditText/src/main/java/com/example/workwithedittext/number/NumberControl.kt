@@ -167,9 +167,9 @@ class NumberControl(
             }
         }
         if (addedSymbol == "0" && index == 0) {
-            if(fraction){
-                listNumber.add("0")
-                listNumber.add(separator.char)
+            if(fraction && !isAddedComma){
+                listNumber.add(index, "0")
+                listNumber.add(index + 1, separator.char)
                 cursorPosition += 1
                 isAddedComma = true
                 return
