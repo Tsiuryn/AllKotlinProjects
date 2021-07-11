@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getResponse (){
         var myText = ""
-        GlobalScope.launch(Dispatchers.IO){
+        CoroutineScope(Dispatchers.IO).launch {
             val doc = Jsoup.connect("https://myfin.by/currency/minsk").get()
             val contents = doc.select(".col-xs-12")
 //            val myContents = contents[0].children()

@@ -26,7 +26,7 @@ class NumberFieldActivity : AppCompatActivity() {
             defaultValue = "15.0",
             postfix = "BYN",
             fraction = false,
-            digitCapacity = 10,
+            digitCapacity = 1,
             supplDigitCapacity = true,
             separator = Separator.DOT,
             maxValue = 250,

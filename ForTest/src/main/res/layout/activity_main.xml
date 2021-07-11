@@ -1,62 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vContainer"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/buttonShow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:background="@drawable/ripple"
-        android:text="Show" />
-
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:rippleColor="@color/white"
-        android:text="Hello"/>
-
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/vCheckbox"
-        style="@style/Widget.App.CheckBox"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="Hello"/>
-
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/vCheckbox1"
-        style="@style/Widget.App.CheckBox1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="Hello"/>
-
-    <!--    <com.google.android.material.textfield.TextInputLayout-->
-    <!--        android:id="@+id/vTextInputLayout"-->
-    <!--        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:errorEnabled="true"-->
-    <!--        app:errorIconDrawable="@null">-->
-
-    <!--        <com.google.android.material.textfield.TextInputEditText-->
-    <!--            android:id="@+id/vEditText"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:gravity="top"-->
-    <!--            android:imeOptions="actionNext"-->
-    <!--            android:maxLines="1"-->
-    <!--            android:paddingTop="8dp"-->
-    <!--            android:paddingBottom="8dp"/>-->
-
-    <!--    </com.google.android.material.textfield.TextInputLayout>-->
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_get_app_24">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="22dp"
+            android:focusable="false"
+            android:text="sdlfjsdlfjlsdkfj"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>
 
